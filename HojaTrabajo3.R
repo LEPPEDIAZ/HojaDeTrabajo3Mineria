@@ -2,8 +2,8 @@ library(cluster) #Para calcular la silueta
 library(e1071)#para cmeans
 library(mclust) #mixtures of gaussians
 library(fpc) #para hacer el plotcluster
-library(NbClust) #Para determinar el número de clusters óptimo
-library(factoextra) #Para hacer gráficos bonitos de clustering
+library(NbClust) #Para determinar el n?mero de clusters ?ptimo
+library(factoextra) #Para hacer gr?ficos bonitos de clustering
 library(rpart)
 library(caret)
 library(tree)
@@ -100,7 +100,7 @@ for (i in 2:10)
 plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
 
 
-#Paquete para saber el mejor número de clusters
+#Paquete para saber el mejor n?mero de clusters
 nb <- NbClust(perros5[,3:16], distance = "euclidean", min.nc = 2,
               max.nc = 10, method = "complete", index ="all")
 
@@ -214,7 +214,7 @@ prediccion <- predict(dt_model, newdata = test[1:13])
 columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
 test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
 test$prediccion <- as.numeric(test$prediccion)
-cfm<-confusionMatrix(  test$prediccion,test$AdoptionSpeed)
+cfm<-confusionMatrix(  as.factor(test$prediccion),as.factor(test$AdoptionSpeed))
 cfm
 
 #prueba para solucionar lo de los niveles de factor. Como ignora los 0,1,3 esto lo soluciona
@@ -252,3 +252,4 @@ t <- table(factor(testCompleto$predRF, u), factor(testCompleto$AdoptionSpeed, u)
 confusionMatrix(t)
 
 #prueba
+factoextra
