@@ -193,11 +193,15 @@ datos <- prueba
 
 porciento <- 70/100
 
-set.seed(124)
 
 trainRowsNumber<-sample(1:nrow(datos),porciento*nrow(datos))
+
+
 train<-datos[trainRowsNumber,]
 test<-datos[-trainRowsNumber,]
+length(train)
+length(test)
+
 dt_model<-rpart(AdoptionSpeed~.,train,method = "class")
 plot(dt_model);text(dt_model)
 prp(dt_model)
