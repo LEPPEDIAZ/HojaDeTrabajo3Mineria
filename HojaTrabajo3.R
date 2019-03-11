@@ -164,8 +164,8 @@ gc()
 # variable respuesta la clase de la velocidad de adopcion
 porciento <- 70/100
 
-install.packages("rpart")
-install.packages("rpart.plot")
+#install.packages("rpart")
+#install.packages("rpart.plot")
 
 
 library(rpart)
@@ -193,7 +193,7 @@ datos <- prueba
 
 porciento <- 70/100
 
-set.seed(123)
+set.seed(124)
 
 trainRowsNumber<-sample(1:nrow(datos),porciento*nrow(datos))
 train<-datos[trainRowsNumber,]
@@ -210,16 +210,30 @@ prediccion <- predict(dt_model, newdata = test[1:13])
 columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
 test$prediccion<-columnaMasAlta #Se le añade al grupo de prueba el valor de la predicción
 test$prediccion <- as.numeric(test$prediccion)
-cfm<-confusionMatrix(na.omit(  test$prediccion),na.omit(test$AdoptionSpeed))
+cfm<-confusionMatrix(  test$prediccion,test$AdoptionSpeed)
 cfm
 
+#prueba para solucionar lo de los niveles de factor. Como ignora los 0,1,3 esto lo soluciona
+u <- union(test$prediccion, test$AdoptionSpeed)
+t <- table(factor(test$prediccion, u), factor(test$AdoptionSpeed, u))
+confusionMatrix(t)
+
+#prueba
+
 #con caret
-ct<-trainControl(method = "cv",train[,1:13],number=12, verboseIter=T)
+ct<-trainControl(method = "cv",train[,1:13],number=3, verboseIter=T)
 modelorf<-train(AdoptionSpeed~.,data=train,method="rf",trControl = ct)
-prediccionRF<-predict(modelorf,newdata = test[,1:13])
+prediccionRF<-predict(modelorf,newdata = test[,1:13],na.action = na.omit)
 testCompleto<-test
 testCompleto$predRFCaret<-prediccionRF
 cfmCaret <- confusionMatrix(testCompleto$predRFCaret,testCompleto$AdoptionSpeed)
+
+#prueba para solucionar lo de los niveles de factor. Como ignora los 0,1,3 esto lo soluciona
+u <- union(testCompleto$predRFCaret, testCompleto$AdoptionSpeed)
+t <- table(factor(testCompleto$predRFCaret, u), factor(testCompleto$AdoptionSpeed, u))
+confusionMatrix(t)
+
+#prueba
 
 #con random forest
 modeloRF1<-randomForest(AdoptionSpeed~.,data=train)
@@ -227,3 +241,10 @@ prediccionRF1<-predict(modeloRF1,newdata = test)
 testCompleto<-test
 testCompleto$predRF<-prediccionRF1
 cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$AdoptionSpeed)
+
+#prueba para solucionar lo de los niveles de factor. Como ignora los 0,1,3 esto lo soluciona
+u <- union(testCompleto$predRF, testCompleto$AdoptionSpeed)
+t <- table(factor(testCompleto$predRF, u), factor(testCompleto$AdoptionSpeed, u))
+confusionMatrix(t)
+
+#prueba
